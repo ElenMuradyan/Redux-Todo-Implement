@@ -75,6 +75,7 @@ const todoReducer = (state = initialState, action) => {
 //store
 
 const store = createStore(todoReducer,initialState);
+
 //maincode
 
 const input = document.getElementById('todo_input');
@@ -89,10 +90,19 @@ const render = () => {
     let filteredTodos;
     
     if(todosVisibility === 'completed'){
+        document.getElementById('completed').style.backgroundColor='#b87affa0';
+        document.getElementById('incompleted').style.backgroundColor='#7700ff';
+        document.getElementById('all').style.backgroundColor='#7700ff';
         filteredTodos = state.todos.filter(todo => todo.completed);
     }else if(todosVisibility === 'incompleted'){
+        document.getElementById('completed').style.backgroundColor='#7700ff';
+        document.getElementById('all').style.backgroundColor='#7700ff';
+        document.getElementById('incompleted').style.backgroundColor='#b87affa0';
         filteredTodos = state.todos.filter(todo => !todo.completed);
     }else{
+        document.getElementById('completed').style.backgroundColor='#7700ff';
+        document.getElementById('incompleted').style.backgroundColor='#7700ff';
+        document.getElementById('all').style.backgroundColor='#b87affa0';
         filteredTodos = state.todos;
     }
     
