@@ -4,12 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <meta name="description" content="A simple and interactive Todo List application using React and Redux implementation.">
+    <meta name="keywords" content="Todo, List, Application, JavaScript">
+    <link rel="icon" href="Images/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="index.css">
 </head>
 <body>
+    <div class="todolist_container">
     <h2>TODO REDUX IMPLEMENATION</h2>
     <input placeholder="Please enter the todo name" id="todo_input"/>
     <button type="submit" id="add_button">Add</button>
     <ul id="todos"></ul>
+    <div id="buttons">
+        <button id="completed">Completed</button>
+        <button id="all">All</button>
+        <button id="incompleted">Incompleted</button>
+    </div>
+    </div>
     <script src="index.js"></script>
 </body>
 </html>

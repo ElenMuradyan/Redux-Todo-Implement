@@ -80,12 +80,23 @@ const store = createStore(todoReducer,initialState);
 const input = document.getElementById('todo_input');
 const button = document.getElementById('add_button');
 const todoList = document.getElementById('todos');
+let todosVisibility = 'all';
 
 const render = () => {
     const state = store.getState();
     todoList.innerHTML = '';
 
-    state.todos.forEach(todo => {
+    let filteredTodos;
+    
+    if(todosVisibility === 'completed'){
+        filteredTodos = state.todos.filter(todo => todo.completed);
+    }else if(todosVisibility === 'incompleted'){
+        filteredTodos = state.todos.filter(todo => !todo.completed);
+    }else{
+        filteredTodos = state.todos;
+    }
+    
+    filteredTodos.forEach(todo => {
         const li = document.createElement('li');
 
         const checkBoxContainer = document.createElement('div');
@@ -114,15 +125,35 @@ const render = () => {
         todoList.appendChild(li);
     })
 }
+document.getElementById('all').onclick = () => {
+    todosVisibility = 'all';
+    render();
+} 
+document.getElementById('completed').onclick = () => {
+    todosVisibility = 'completed';
+    render();
+}
+document.getElementById('incompleted').onclick = () => {
+    todosVisibility = 'incompleted';
+    render();
+}
 
 store.subscribe(render);
 
-button.onclick = () => {
+function handleAddTodo () {
     const todoName = input.value.trim();
-    if(todoName){
+    if (todoName) {
         store.dispatch({type: 'ADD', payload: todoName})
         input.value = '';
     }
 }
+button.onclick = handleAddTodo;
+
+input.addEventListener('keydown', (event) => {
+    if(event.key === 'Enter'){
+        handleAddTodo()
+    }
+})
+
 
 render();
