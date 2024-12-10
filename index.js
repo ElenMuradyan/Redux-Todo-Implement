@@ -1,82 +1,5 @@
-//redux
-
-const createStore = (reducer, initialState) => {
-    let state = initialState;
-    const callbacks = [];
-
-    const getState = () => state;
-
-    const dispatch = action => {
-        state = reducer(state, action);
-        callbacks.forEach(foo => foo());
-    }
-
-    const subscribe = callback => {
-        callbacks.push(callback);
-        return () => callbacks.filter(cb => cb !== callback);
-    }
-
-    return{
-        getState:getState,
-        subscribe:subscribe,
-        dispatch:dispatch
-    }
-}
-
-//actions
-
-const addTodo = todoName => ({
-    type: 'ADD',
-    payload: todoName
-})
-
-const deleteTodo = index => ({
-    type: 'DELETE',
-    payload: index
-})
-
-const competeTodo = index => ({
-    type: 'COMPLETE',
-    payload: index
-})
-
-//reducer
-
-const initialState = {
-    todos: []
-}
-
-let index = 1;
-
-const todoReducer = (state = initialState, action) => {
-    switch(action.type){
-        case 'ADD':
-            return{
-            ...state,
-            todos:[
-                ...state.todos,{name: action.payload, index: index++, completed: false}
-            ]
-        }
-        case 'DELETE':
-            return{
-            ...state,
-            todos: state.todos.filter(todo => todo.index !== action.payload)
-        }
-        case 'COMPLETE':
-            return{
-            ...state,
-            todos: state.todos.map(todo => (todo.index === action.payload) ? {...todo, completed: !todo.completed} : todo)
-        }
-        default:
-            return state;
-    }
-}
-
-//store
-
-const store = createStore(todoReducer,initialState);
-
-//maincode
+import { addTodo, deleteTodo, completeTodo } from "./redux/state_management/action/todoAction.js";
+import { store } from "./redux/state_management/store.js";
 
 const input = document.getElementById('todo_input');
 const button = document.getElementById('add_button');
@@ -90,19 +13,10 @@ const render = () => {
     let filteredTodos;
     
     if(todosVisibility === 'completed'){
-        document.getElementById('completed').style.backgroundColor='#b87affa0';
-        document.getElementById('incompleted').style.backgroundColor='#7700ff';
-        document.getElementById('all').style.backgroundColor='#7700ff';
         filteredTodos = state.todos.filter(todo => todo.completed);
     }else if(todosVisibility === 'incompleted'){
-        document.getElementById('completed').style.backgroundColor='#7700ff';
-        document.getElementById('all').style.backgroundColor='#7700ff';
-        document.getElementById('incompleted').style.backgroundColor='#b87affa0';
         filteredTodos = state.todos.filter(todo => !todo.completed);
     }else{
-        document.getElementById('completed').style.backgroundColor='#7700ff';
-        document.getElementById('incompleted').style.backgroundColor='#7700ff';
-        document.getElementById('all').style.backgroundColor='#b87affa0';
         filteredTodos = state.todos;
     }
     
@@ -126,25 +40,40 @@ const render = () => {
         li.appendChild(deleteButton);
         
         checkBoxContainer.onclick= () => {
-            store.dispatch({type: 'COMPLETE', payload: todo.index});
+            store.dispatch(completeTodo(todo.index));
         }
 
         deleteButton.onclick = () => {
-            store.dispatch({type: 'DELETE', payload: todo.index})
+            store.dispatch(deleteTodo(todo.index))
         }
         todoList.appendChild(li);
     })
 }
+
+function getColor (state) {
+    console.log(state);
+    const buttons = document.getElementsByClassName('button');
+
+    for (let button of buttons) {
+        button.style.backgroundColor = '#7700ff';
+    }
+
+    document.getElementById(state).style.backgroundColor='#b87affa0';    
+}
+
 document.getElementById('all').onclick = () => {
     todosVisibility = 'all';
+    getColor('all');
     render();
 } 
 document.getElementById('completed').onclick = () => {
     todosVisibility = 'completed';
+    getColor('completed');
     render();
 }
 document.getElementById('incompleted').onclick = () => {
     todosVisibility = 'incompleted';
+    getColor('incompleted');
     render();
 }
 
@@ -153,7 +82,7 @@ store.subscribe(render);
 function handleAddTodo () {
     const todoName = input.value.trim();
     if (todoName) {
-        store.dispatch({type: 'ADD', payload: todoName})
+        store.dispatch(addTodo(todoName))
         input.value = '';
     }
 }
